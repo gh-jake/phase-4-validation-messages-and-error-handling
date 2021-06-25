@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 
 function MovieForm() {
+  const [errors, setErrors] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
     year: new Date().getFullYear(),
@@ -16,15 +17,20 @@ function MovieForm() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    fetch("/movies", {
+    const response = await fetch("/movies", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
-    })
-      .then((response) => response.json())
-      .then((newMovie) => console.log(newMovie));
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log("Movie created:", data)
+    }
+    else {
+      setErrors(data.errors);
+    }
   }
 
   function handleChange(e) {
